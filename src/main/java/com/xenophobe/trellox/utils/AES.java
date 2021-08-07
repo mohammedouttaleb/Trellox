@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -21,21 +22,15 @@ public class AES {
 
 
     private final SecretKeySpec secretKey;
-    private  byte[] key;
 
     public  AES() throws UnsupportedEncodingException {
-        MessageDigest sha=null;
+        MessageDigest sha;
         String myKey="XenoPhobe99";
-        try {
-            key = myKey.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            LOG.error("NoSuchAlgorithmException {}",e);
-            throw new UnsupportedEncodingException();
-        }
+        byte[] key = myKey.getBytes(StandardCharsets.UTF_8);
         try {
             sha = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e) {
-            LOG.error("UnsupportedEncodingException {}",e);
+            LOG.error("UnsupportedEncodingException : ",e);
             throw new UnsupportedEncodingException();
         }
         key = sha.digest(key);
@@ -48,9 +43,9 @@ public class AES {
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            LOG.error("Exception {}",e);
+            LOG.error("Exception : ",e);
         }
         return null;
     }
@@ -62,7 +57,7 @@ public class AES {
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (Exception e) {
-            LOG.error("Exception {}",e);
+            LOG.error("Exception : ",e);
         }
         return null;
     }
