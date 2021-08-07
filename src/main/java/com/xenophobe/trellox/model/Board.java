@@ -23,6 +23,9 @@ public class Board {
     @JoinColumn(name = "USER_ID")
     private User owner;
 
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "board")
+    private java.util.List<List> lists;
+
 
     public int getBoardId() {
         return boardId;

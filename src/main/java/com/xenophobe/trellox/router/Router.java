@@ -20,4 +20,9 @@ public class Router {
         return userService.createUser(user);
     }
 
+    public UserOutputDto loginUser(String email,String password){
+
+        return  userService.loginUser(email,password);
+    }
+
 }
