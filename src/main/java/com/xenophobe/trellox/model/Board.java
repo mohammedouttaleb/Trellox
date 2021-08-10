@@ -1,5 +1,7 @@
 package com.xenophobe.trellox.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 
 
@@ -27,6 +29,19 @@ public class Board {
     private java.util.List<List> lists;
 
 
+    @Type(type = "json")
+    @Column(columnDefinition = "jsonb",name = "MEMBERS")
+    private java.util.List<User> members;
+
+    public Board() { }
+
+    public Board(String boardName, boolean isVisible,User owner) {
+        this.boardName=boardName;
+        this.isVisible=isVisible;
+        this.owner=owner;
+    }
+
+
     public int getBoardId() {
         return boardId;
     }
@@ -47,12 +62,29 @@ public class Board {
         isVisible = visible;
     }
 
+    public java.util.List<List> getLists() {
+        return lists;
+    }
+
+    public void setLists(java.util.List<List> lists) {
+        this.lists = lists;
+    }
+
     public User getOwner() {
         return owner;
     }
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public java.util.List<User> getMembers() {
+        return members;
+    }
+
+
+    public void setMembers(java.util.List<User> members) {
+        this.members = members;
     }
 
     @Override

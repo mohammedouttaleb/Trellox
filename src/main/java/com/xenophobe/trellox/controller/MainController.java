@@ -1,5 +1,6 @@
 package com.xenophobe.trellox.controller;
 
+import com.xenophobe.trellox.dto.BoardOutputDto;
 import com.xenophobe.trellox.dto.UserOutputDto;
 import com.xenophobe.trellox.model.User;
 import com.xenophobe.trellox.router.Router;
@@ -14,24 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @RestController
 @Validated
-public class UserController {
+public class MainController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
 
     private final Router router;
 
-    public UserController(Router router){
+    public MainController(Router router){
         this.router=router;
     }
 
 
     @PostMapping(value = "/createUser")
-    /**after the register action i should generate a token and send it to the client ,he should save
-     * it in the local storage and every time he needs to do an action which requires authentication
-     * i should verify that he has that token*/
     public ResponseEntity<UserOutputDto> createUser(@Valid @RequestBody User user){
         //call the router
         LOG.debug("CreateUser request {}",user);
@@ -57,4 +57,19 @@ public class UserController {
         return bodyBuilder.body(userOutputDto);
 
     }
+
+    @PostMapping("/createBoard")
+    public ResponseEntity<BoardOutputDto> createBoard(
+             @NotEmpty @Size(min = 5) String boardName,
+             @NotNull boolean isVisible,
+             @NotEmpty  String userToken){
+
+        LOG.debug("CreateBoard request {} {} {}", boardName,isVisible,userToken);
+        BoardOutputDto boardOutputDto= router.createBoard( boardName, isVisible,userToken);
+        LOG.debug("CreateBoard response {}",boardOutputDto);
+
+        ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
+        return bodyBuilder.body(boardOutputDto);
+    }
+
 }
