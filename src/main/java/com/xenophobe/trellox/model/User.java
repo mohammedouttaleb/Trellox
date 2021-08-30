@@ -29,7 +29,7 @@ public class User {
 
     @NotEmpty
     @Email
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL",unique = true)
     private String email;
 
     @NotEmpty

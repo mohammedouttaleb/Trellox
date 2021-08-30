@@ -1,8 +1,8 @@
 package com.xenophobe.trellox.service;
 
 import com.xenophobe.trellox.dto.UserOutputDto;
+import com.xenophobe.trellox.exception.EmailAlreadyExistsException;
 import com.xenophobe.trellox.exception.InvalidCredentialsException;
-import com.xenophobe.trellox.exception.UserException;
 import com.xenophobe.trellox.model.User;
 import com.xenophobe.trellox.repository.UserRepository;
 import com.xenophobe.trellox.utils.AES;
@@ -34,9 +34,12 @@ public class UserService {
             String encryptedPassword=ObjectUtils.safeGet(user.getPassword(), encryptionObject::encrypt);
             user.setPassword(encryptedPassword);
             userRepository.save(user);
-           return  new UserOutputDto("User saved with success!!!");
+            //generate and send the token  to identify the user during the session
+            int userId=userRepository.findUserIdByEmail(user.getEmail());
+            String token=encryptionObject.encrypt(String.valueOf(userId));
+           return  new UserOutputDto("User saved with success!!!",token, user.getEmail());
         }
-        throw new UserException("EmailAlreadyExistsException","this email already exists");
+        throw new EmailAlreadyExistsException("EmailAlreadyExistsException","this email already exists");
     }
 
     private boolean isEmailValidForSignUp(String email){
@@ -48,10 +51,22 @@ public class UserService {
         Optional<User> potentialUser=userRepository.findByEmail(email);
         if(potentialUser.isPresent()){
             String decryptedPassword=encryptionObject.decrypt(potentialUser.get().getPassword());
-           if(decryptedPassword.equals(password))
-               return new UserOutputDto("login done  with success!!!");
+           if(decryptedPassword.equals(password)){
+               String token=encryptionObject.encrypt(String.valueOf(potentialUser.get().getUserId()));
+               return new UserOutputDto("login done  with success!!!",token,potentialUser.get().getEmail());
+           }
+
 
         }
         throw new InvalidCredentialsException("CredentialNotValidException","Invalid Credentials");
+    }
+
+     Optional<User> isUserValid(String userToken) {
+
+        int userId= Integer.parseInt( encryptionObject.decrypt(userToken));
+         return userRepository.findById(userId);
+    }
+      Optional<User>  findUserByEmail(String email){
+        return userRepository.findByEmail(email);
     }
 }

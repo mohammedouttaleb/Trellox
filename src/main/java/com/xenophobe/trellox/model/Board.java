@@ -1,6 +1,9 @@
 package com.xenophobe.trellox.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 
 
 @Entity
@@ -13,7 +16,7 @@ public class Board {
     @Column(name = "BOARD_ID")
     private int boardId;
 
-    @Column(name = "BOARD_NAME")
+    @Column(name = "BOARD_NAME",unique = true)
     private String boardName;
 
     @Column(name = "IS_VISIBLE")
@@ -25,6 +28,19 @@ public class Board {
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "board")
     private java.util.List<List> lists;
+
+
+    @Type(type = "json")
+    @Column(columnDefinition = "jsonb",name = "MEMBERS_EMAIL")
+    private java.util.List<String> membersEmail;
+
+    public Board() { }
+
+    public Board(String boardName, boolean isVisible,User owner) {
+        this.boardName=boardName;
+        this.isVisible=isVisible;
+        this.owner=owner;
+    }
 
 
     public int getBoardId() {
@@ -47,12 +63,48 @@ public class Board {
         isVisible = visible;
     }
 
+    public java.util.List<List> getLists() {
+        return lists;
+    }
+
+    public void setLists(java.util.List<List> lists) {
+        this.lists = lists;
+    }
+
+
+    public void addList(List list){
+        if(lists==null) lists=new ArrayList<>();
+        lists.add(list);
+    }
+    public void removeMember(List list){
+        if(lists==null) lists=new ArrayList<>();
+        lists.remove(list);
+    }
+
     public User getOwner() {
         return owner;
     }
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public java.util.List<String> getMembers() {
+        return membersEmail;
+    }
+
+    public void addMember(String userEmail){
+        if(membersEmail==null) membersEmail=new ArrayList<>();
+        membersEmail.add(userEmail);
+    }
+    public void removeMember(String userEmail){
+        if(membersEmail==null) membersEmail=new ArrayList<>();
+        membersEmail.remove(userEmail);
+    }
+
+
+    public void setMembers(java.util.List<String> membersEmail) {
+        this.membersEmail = membersEmail;
     }
 
     @Override

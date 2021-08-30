@@ -36,6 +36,13 @@ public class Card extends BaseEntity {
     @JoinColumn(name = "LIST_ID")
     private com.xenophobe.trellox.model.List list;
 
+
+    public Card(String cardName, com.xenophobe.trellox.model.List list) {
+        this.cardName = cardName;
+        this.list = list;
+    }
+    public Card(){}
+
     public int getCardId() {
         return cardId;
     }

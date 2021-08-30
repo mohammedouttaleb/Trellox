@@ -2,8 +2,10 @@ package com.xenophobe.trellox.controller;
 
 
 import com.xenophobe.trellox.dto.ErrorResponseDto;
+import com.xenophobe.trellox.exception.BoardNotFoundException;
+import com.xenophobe.trellox.exception.EmailAlreadyExistsException;
 import com.xenophobe.trellox.exception.InvalidCredentialsException;
-import com.xenophobe.trellox.exception.UserException;
+import com.xenophobe.trellox.exception.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -12,16 +14,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
+
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@org.springframework.web.bind.annotation.ControllerAdvice(assignableTypes = UserController.class)
+@org.springframework.web.bind.annotation.ControllerAdvice(assignableTypes = MainController.class)
 public class ControllerAdvice {
 
     private static final Logger LOG = LoggerFactory.getLogger(ControllerAdvice.class);
 
-    @ExceptionHandler(UserException.class)
+    @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleUserException(
-            UserException exception)
+            EmailAlreadyExistsException exception)
     {
         return  ResponseEntity.status(409).body(new ErrorResponseDto(exception.getCode(), exception.getMsg()));
     }
@@ -31,55 +35,30 @@ public class ControllerAdvice {
     {
         return  ResponseEntity.status(401).body(new ErrorResponseDto(exception.getCode(), exception.getMsg()));
     }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserNotFoundException(
+            UserNotFoundException exception)
+    {
+        return  ResponseEntity.status(404).body(new ErrorResponseDto(exception.getCode(), exception.getMsg()));
+    }
+    @ExceptionHandler(BoardNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleBoardNotFoundException(
+            BoardNotFoundException exception)
+    {
+        return  ResponseEntity.status(404).body(new ErrorResponseDto(exception.getCode(), exception.getMsg()));
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleArgumentNotValidException(
             MethodArgumentNotValidException exception)
     {
         return  ResponseEntity.status(400).body(new ErrorResponseDto("MethodArgumentNotValidException", exception.getMessage()));
     }
-
- /*   @ExceptionHandler(MonitoringDashboardAlreadyExistsException.class)
-    public ResponseEntity<MonitoringErrorResponseDto> handleDashboardAlreadyExistsException(
-            MonitoringDashboardAlreadyExistsException exception,
-            @RequestAttribute(AwsHttpUtils.REQUEST_CONTEXT_ATTRIBUTE) RequestContext requestContext) {
-        return handleMonitoringException(requestContext, 409, exception, this::enrichErrorDto);
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleConstraintViolationException(
+            ConstraintViolationException exception)
+    {
+        return  ResponseEntity.status(500).body(new ErrorResponseDto("ConstraintViolationException", exception.getMessage()));
     }
 
-    @ExceptionHandler(MonitoringMetricAlarmNotFoundException.class)
-    public ResponseEntity<MonitoringErrorResponseDto> handleMetricAlarmNotFoundException(
-            MonitoringMetricAlarmNotFoundException exception,
-            @RequestAttribute(AwsHttpUtils.REQUEST_CONTEXT_ATTRIBUTE) RequestContext requestContext) {
-        return handleMonitoringException(requestContext, 409, exception, this::enrichErrorDto);
-    }
-
-
-
-    private <E extends MonitoringException> ResponseEntity<MonitoringErrorResponseDto> handleMonitoringException(
-            RequestContext requestContext, int statusCode, E exception,
-            BiConsumer<MonitoringErrorResponseDtoBuilder, E> enrichError) {
-        MonitoringErrorResponseDtoBuilder errorDtoBuilder = new MonitoringErrorResponseDtoBuilder()
-                .setCode(exception.getCode())
-                .setMessage(exception.getMsg())
-                .setRequestId(requestContext.requestId())
-                .setHostId(requestContext.hostId());
-        enrichError.accept(errorDtoBuilder, exception);
-        MonitoringErrorResponseDto errorResponseDto = errorDtoBuilder.build();
-        LOG.debug("error response {}", errorResponseDto);
-        return ResponseEntity
-                .status(statusCode)
-                .contentType(MediaType.APPLICATION_XML)
-                .body(errorResponseDto);
-    }
-    */
-    /*
-    private void enrichErrorDto(MonitoringErrorResponseDtoBuilder errorDtoBuilder, MonitoringDashboardNotFoundException exception) {
-        errorDtoBuilder.setDashboardName(exception.getDashboardName());
-    }
-
-    private void enrichErrorDto(MonitoringErrorResponseDtoBuilder errorDtoBuilder, MonitoringDashboardAlreadyExistsException exception) {
-        errorDtoBuilder.setDashboardName(exception.getDashboardName());
-    }
-    private void enrichErrorDto(MonitoringErrorResponseDtoBuilder errorDtoBuilder, MonitoringMetricAlarmNotFoundException exception) { }
-*/
 }
 
