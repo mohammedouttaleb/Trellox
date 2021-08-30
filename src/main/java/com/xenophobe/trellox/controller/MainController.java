@@ -142,4 +142,37 @@ public class MainController {
         return bodyBuilder.body(boardOutputDto);
     }
 
+
+    @DeleteMapping(path = "/deleteList/{boardName}")
+    public ResponseEntity<BoardOutputDto> deleteList(
+
+            @NotNull Integer listId,
+            @PathVariable(name = "boardName") String boardName,
+            @NotEmpty String userToken
+
+    ){
+        LOG.debug("DeleteList request {} {}  ", listId,boardName);
+        BoardOutputDto boardOutputDto= router.deleteList(listId,boardName,userToken);
+        LOG.debug("DeleteList response {}",boardOutputDto);
+
+        ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
+        return bodyBuilder.body(boardOutputDto);
+    }
+
+    @DeleteMapping(path = "/deleteCard/{boardName}")
+    public ResponseEntity<BoardOutputDto> deleteCard(
+
+            @NotNull Integer cardId,
+            @PathVariable(name = "boardName") String boardName,
+            @NotEmpty String userToken
+
+    ){
+        LOG.debug("DeleteList request {} {}  ", cardId,boardName);
+        BoardOutputDto boardOutputDto= router.deleteCard(cardId,boardName,userToken);
+        LOG.debug("DeleteList response {}",boardOutputDto);
+
+        ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
+        return bodyBuilder.body(boardOutputDto);
+    }
+
 }

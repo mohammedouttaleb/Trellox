@@ -76,7 +76,7 @@ public class Board {
         if(lists==null) lists=new ArrayList<>();
         lists.add(list);
     }
-    public void removeMember(List list){
+    public void removeList(List list){
         if(lists==null) lists=new ArrayList<>();
         lists.remove(list);
     }

@@ -1,5 +1,6 @@
 package com.xenophobe.trellox.service;
 
+import com.xenophobe.trellox.exception.ListNotFoundException;
 import com.xenophobe.trellox.model.List;
 import com.xenophobe.trellox.repository.ListRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,16 @@ public class ListService {
         if(list!=null) listRepository.save(list);
     }
 
-    Optional<List> findListById(int listId){
-        return  listRepository.findById(listId);
+    List isListValid(int listId,String errorMessage){
+        Optional<List> optionalList=  listRepository.findById(listId);
+        if(optionalList.isEmpty()) throw  new ListNotFoundException("ListNotFoundException",errorMessage);
+        return optionalList.get();
+    }
+     List findListById(int listId){
+          //i called isListValid just because it feeds my logic needs but not because i want to verify the validity of the list
+        return isListValid(listId,"List NotFound");
+    }
+     void deleteListById(int listId){
+        listRepository.deleteById(listId);
     }
 }

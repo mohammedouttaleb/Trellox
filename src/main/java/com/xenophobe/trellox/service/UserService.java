@@ -3,6 +3,7 @@ package com.xenophobe.trellox.service;
 import com.xenophobe.trellox.dto.UserOutputDto;
 import com.xenophobe.trellox.exception.EmailAlreadyExistsException;
 import com.xenophobe.trellox.exception.InvalidCredentialsException;
+import com.xenophobe.trellox.exception.UserNotFoundException;
 import com.xenophobe.trellox.model.User;
 import com.xenophobe.trellox.repository.UserRepository;
 import com.xenophobe.trellox.utils.AES;
@@ -61,12 +62,22 @@ public class UserService {
         throw new InvalidCredentialsException("CredentialNotValidException","Invalid Credentials");
     }
 
-     Optional<User> isUserValid(String userToken) {
+     User isUserValid(String userToken,String errorMessage) {
 
         int userId= Integer.parseInt( encryptionObject.decrypt(userToken));
-         return userRepository.findById(userId);
+         Optional<User> optionalUser= userRepository.findById(userId);
+         if(optionalUser.isEmpty()) throw  new UserNotFoundException("UserNotFoundException",errorMessage);
+         return optionalUser.get();
     }
       Optional<User>  findUserByEmail(String email){
         return userRepository.findByEmail(email);
+    }
+
+    User isUserValidByEmail(String email,String errorMessage) {
+
+
+        Optional<User> optionalUser= userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()) throw  new UserNotFoundException("UserNotFoundException",errorMessage);
+        return optionalUser.get();
     }
 }

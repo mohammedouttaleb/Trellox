@@ -66,4 +66,14 @@ public class Router {
     {
         return  boardService.updateCard(cardId,cardDescription,dueDate,comments,membersEmails,boardName,userToken);
     }
+
+    public BoardOutputDto deleteList(Integer listId, String boardName, String userToken) {
+
+        return  boardService.deleteList(listId,boardName,userToken);
+    }
+
+    public BoardOutputDto deleteCard(Integer cardId, String boardName, String userToken) {
+
+        return  boardService.deleteCard(cardId,boardName,userToken);
+    }
 }

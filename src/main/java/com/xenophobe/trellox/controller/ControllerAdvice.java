@@ -2,10 +2,7 @@ package com.xenophobe.trellox.controller;
 
 
 import com.xenophobe.trellox.dto.ErrorResponseDto;
-import com.xenophobe.trellox.exception.BoardNotFoundException;
-import com.xenophobe.trellox.exception.EmailAlreadyExistsException;
-import com.xenophobe.trellox.exception.InvalidCredentialsException;
-import com.xenophobe.trellox.exception.UserNotFoundException;
+import com.xenophobe.trellox.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -47,6 +44,13 @@ public class ControllerAdvice {
     {
         return  ResponseEntity.status(404).body(new ErrorResponseDto(exception.getCode(), exception.getMsg()));
     }
+    @ExceptionHandler(CardNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleCardNotFoundException(
+            CardNotFoundException exception)
+    {
+        return  ResponseEntity.status(404).body(new ErrorResponseDto(exception.getCode(), exception.getMsg()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleArgumentNotValidException(
             MethodArgumentNotValidException exception)

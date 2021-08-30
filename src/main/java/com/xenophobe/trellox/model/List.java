@@ -1,5 +1,8 @@
 package com.xenophobe.trellox.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 
@@ -19,7 +22,8 @@ public class List {
     @JoinColumn(name = "BOARD_ID")
     private Board board;
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "list")
+    //this cascade params means that if you delete A list all the cards associate to it get deleted also
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "list",cascade = CascadeType.REMOVE)
     private java.util.List<Card> cardList;
 
 
