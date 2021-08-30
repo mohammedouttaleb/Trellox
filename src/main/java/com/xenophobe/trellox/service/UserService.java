@@ -37,7 +37,7 @@ public class UserService {
             //generate and send the token  to identify the user during the session
             int userId=userRepository.findUserIdByEmail(user.getEmail());
             String token=encryptionObject.encrypt(String.valueOf(userId));
-           return  new UserOutputDto("User saved with success!!!",token);
+           return  new UserOutputDto("User saved with success!!!",token, user.getEmail());
         }
         throw new EmailAlreadyExistsException("EmailAlreadyExistsException","this email already exists");
     }
@@ -53,7 +53,7 @@ public class UserService {
             String decryptedPassword=encryptionObject.decrypt(potentialUser.get().getPassword());
            if(decryptedPassword.equals(password)){
                String token=encryptionObject.encrypt(String.valueOf(potentialUser.get().getUserId()));
-               return new UserOutputDto("login done  with success!!!",token);
+               return new UserOutputDto("login done  with success!!!",token,potentialUser.get().getEmail());
            }
 
 
@@ -65,5 +65,8 @@ public class UserService {
 
         int userId= Integer.parseInt( encryptionObject.decrypt(userToken));
          return userRepository.findById(userId);
+    }
+      Optional<User>  findUserByEmail(String email){
+        return userRepository.findByEmail(email);
     }
 }

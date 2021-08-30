@@ -3,6 +3,7 @@ package com.xenophobe.trellox.model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 
 
 @Entity
@@ -15,7 +16,7 @@ public class Board {
     @Column(name = "BOARD_ID")
     private int boardId;
 
-    @Column(name = "BOARD_NAME")
+    @Column(name = "BOARD_NAME",unique = true)
     private String boardName;
 
     @Column(name = "IS_VISIBLE")
@@ -30,8 +31,8 @@ public class Board {
 
 
     @Type(type = "json")
-    @Column(columnDefinition = "jsonb",name = "MEMBERS")
-    private java.util.List<User> members;
+    @Column(columnDefinition = "jsonb",name = "MEMBERS_EMAIL")
+    private java.util.List<String> membersEmail;
 
     public Board() { }
 
@@ -70,6 +71,16 @@ public class Board {
         this.lists = lists;
     }
 
+
+    public void addList(List list){
+        if(lists==null) lists=new ArrayList<>();
+        lists.add(list);
+    }
+    public void removeMember(List list){
+        if(lists==null) lists=new ArrayList<>();
+        lists.remove(list);
+    }
+
     public User getOwner() {
         return owner;
     }
@@ -78,13 +89,22 @@ public class Board {
         this.owner = owner;
     }
 
-    public java.util.List<User> getMembers() {
-        return members;
+    public java.util.List<String> getMembers() {
+        return membersEmail;
+    }
+
+    public void addMember(String userEmail){
+        if(membersEmail==null) membersEmail=new ArrayList<>();
+        membersEmail.add(userEmail);
+    }
+    public void removeMember(String userEmail){
+        if(membersEmail==null) membersEmail=new ArrayList<>();
+        membersEmail.remove(userEmail);
     }
 
 
-    public void setMembers(java.util.List<User> members) {
-        this.members = members;
+    public void setMembers(java.util.List<String> membersEmail) {
+        this.membersEmail = membersEmail;
     }
 
     @Override

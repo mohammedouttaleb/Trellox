@@ -1,6 +1,7 @@
 package com.xenophobe.trellox.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "LIST")
@@ -22,6 +23,15 @@ public class List {
     private java.util.List<Card> cardList;
 
 
+    public List() {
+    }
+
+    public List(String listName, Board board, java.util.List<Card> cardList) {
+        this.listName = listName;
+        this.board = board;
+        this.cardList = cardList;
+    }
+
     public int getListId() {
         return listId;
     }
@@ -33,6 +43,21 @@ public class List {
     public void setListName(String listName) {
         this.listName = listName;
     }
+
+    public java.util.List<Card> getCardList() {
+        return cardList;
+    }
+
+
+    public void addCard(Card card){
+        if(cardList==null) cardList=new ArrayList<>();
+        cardList.add(card);
+    }
+    public void removeCard(Card card){
+        if(cardList==null) cardList=new ArrayList<>();
+        cardList.remove(card);
+    }
+
 
     @Override
     public String toString() {

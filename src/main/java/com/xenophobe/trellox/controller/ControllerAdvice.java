@@ -2,6 +2,7 @@ package com.xenophobe.trellox.controller;
 
 
 import com.xenophobe.trellox.dto.ErrorResponseDto;
+import com.xenophobe.trellox.exception.BoardNotFoundException;
 import com.xenophobe.trellox.exception.EmailAlreadyExistsException;
 import com.xenophobe.trellox.exception.InvalidCredentialsException;
 import com.xenophobe.trellox.exception.UserNotFoundException;
@@ -37,6 +38,12 @@ public class ControllerAdvice {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleUserNotFoundException(
             UserNotFoundException exception)
+    {
+        return  ResponseEntity.status(404).body(new ErrorResponseDto(exception.getCode(), exception.getMsg()));
+    }
+    @ExceptionHandler(BoardNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleBoardNotFoundException(
+            BoardNotFoundException exception)
     {
         return  ResponseEntity.status(404).body(new ErrorResponseDto(exception.getCode(), exception.getMsg()));
     }
