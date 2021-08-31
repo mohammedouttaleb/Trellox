@@ -125,13 +125,13 @@ public class MainController {
     @PutMapping(path = "/updateCard/{boardName}")
     public ResponseEntity<BoardOutputDto> updateCard(
 
-            @NotNull Integer cardId,
+              @NotNull Integer cardId,
             String cardDescription,
-            Instant dueDate,
-            ListWrapper<String> comments,
-            ArrayList<String> membersEmails,
+             Instant dueDate,
+             ListWrapper<String> comments,
+             ArrayList<String> membersEmails,
             @PathVariable(name = "boardName") String boardName,
-            @NotEmpty String userToken
+             @NotEmpty String userToken
 
     ){
         LOG.debug("UpdateCard request {} {} {} {} {} {} ", cardId,cardDescription,dueDate,comments,membersEmails,boardName);
@@ -164,9 +164,8 @@ public class MainController {
 
             @NotNull Integer cardId,
             @PathVariable(name = "boardName") String boardName,
-            @NotEmpty String userToken
-
-    ){
+            @NotEmpty String userToken )
+    {
         LOG.debug("DeleteList request {} {}  ", cardId,boardName);
         BoardOutputDto boardOutputDto= router.deleteCard(cardId,boardName,userToken);
         LOG.debug("DeleteList response {}",boardOutputDto);
@@ -174,5 +173,23 @@ public class MainController {
         ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
         return bodyBuilder.body(boardOutputDto);
     }
+
+    @PutMapping(path = "/changeVisibility/{boardName}")
+    public ResponseEntity<BoardOutputDto> changeBoardVisibility(
+             boolean isVisible,
+            @PathVariable(name = "boardName") String boardName,
+            @NotEmpty String userToken )
+    {
+        LOG.debug("ChangeVisibility request {} {}  ", isVisible,boardName);
+        BoardOutputDto boardOutputDto= router.changeBoardVisibility(isVisible,boardName,userToken);
+        LOG.debug("ChangeVisibility response {}",boardOutputDto);
+
+        ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
+        return bodyBuilder.body(boardOutputDto);
+
+    }
+
+
+
 
 }

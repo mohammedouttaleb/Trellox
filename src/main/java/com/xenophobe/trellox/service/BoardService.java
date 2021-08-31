@@ -207,4 +207,18 @@ public class BoardService {
 
          return  ModelToDtoMapper.mapToBoard(board);
     }
+
+    public BoardOutputDto changeBoardVisibility(boolean isVisible, String boardName, String userToken) {
+
+        //check the validity of the user
+        userService.isUserValid(userToken,"You are not allowed to delete a Card.Please register and try again");
+
+        //retrieve board data
+        Board board= boardExists(boardName,"No board has been found");
+        board.setVisible(isVisible);
+        boardRepository.save(board);
+
+        return  ModelToDtoMapper.mapToBoard(board);
+
+    }
 }

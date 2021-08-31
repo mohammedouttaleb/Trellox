@@ -76,4 +76,9 @@ public class Router {
 
         return  boardService.deleteCard(cardId,boardName,userToken);
     }
+
+    public BoardOutputDto changeBoardVisibility(boolean isVisible, String boardName, String userToken) {
+
+        return  boardService.changeBoardVisibility(isVisible,boardName,userToken);
+    }
 }

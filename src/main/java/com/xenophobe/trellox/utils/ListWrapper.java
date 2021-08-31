@@ -9,10 +9,6 @@ public class ListWrapper<T> {
     private ArrayList<T> listOfTType;
 
 
-    public ListWrapper(ArrayList<T> listOfTType) {
-        this.listOfTType = listOfTType;
-    }
-
     public ArrayList<T> getListOfTType() {
         return listOfTType;
     }
@@ -20,7 +16,6 @@ public class ListWrapper<T> {
     public void setListOfTType(ArrayList<T> listOfTType) {
         this.listOfTType = listOfTType;
     }
-
 
     @Override
     public String toString() {
