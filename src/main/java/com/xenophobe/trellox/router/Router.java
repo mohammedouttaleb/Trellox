@@ -81,4 +81,19 @@ public class Router {
 
         return  boardService.changeBoardVisibility(isVisible,boardName,userToken);
     }
+
+    public BoardOutputDto moveCard(int cardId, int newListId, String boardName, String userToken) {
+
+        return boardService.moveCard(cardId,newListId,boardName,userToken);
+    }
+
+//    public UserOutputDto sendEmailVerification(String email) {
+//
+//        return  userService.sendEmailVerification(email);
+//    }
+
+    public UserOutputDto verifyEmail(String email, String providedToken) {
+
+        return  userService.verifyEmail(providedToken,email);
+    }
 }

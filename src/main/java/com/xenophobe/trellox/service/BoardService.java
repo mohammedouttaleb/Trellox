@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -52,6 +50,8 @@ public class BoardService {
         User user= userService.isUserValid(userToken,"You are not allowed to create a board.Please register and try again ");
 
         Board board=new Board(boardName,isVisible,user);
+       //i added the owner email at listMembers so he will become the first member in his board
+        board.setMembers(java.util.List.of(user.getEmail()));
          boardRepository.save(board);
 
         return ModelToDtoMapper.mapToBoard(board);
@@ -62,9 +62,8 @@ public class BoardService {
             String boardName,
             String userToken)
     {
-        //check if the board's  owner is valid
-        userService.isUserValid(userToken,"You are not allowed to add a member to the  board.Please register and try again ");
-
+        //to do this operation the user must be a board member or the owner
+        isBoardMember(userToken,boardName);
 
         //check that the potential new member has already an account in trellox otherwise he can't be added
         User memberUser= userService.isUserValidByEmail(potentialMemberEmail,"You try to add a non registered  user to the board!!");
@@ -81,9 +80,8 @@ public class BoardService {
 
     public BoardOutputDto addlist(String listName, String boardName, String userToken) {
 
-        //check if the user is valid
-        userService.isUserValid(userToken,"You are not allowed to add a List.Please register and try again");
-
+        //to do this operation the user must be a board member or the owner
+        isBoardMember(userToken,boardName);
 
         //check is the board exists
         Board myBoard= boardExists(boardName,"No board has been found");
@@ -99,8 +97,8 @@ public class BoardService {
     }
     public BoardOutputDto addCard(String cardName, Integer listId, String boardName, String userToken) {
 
-        //check if the user is valid
-        userService.isUserValid(userToken,"You are not allowed to add a card.Please register and try again");
+        //to do this operation the user must be a board member or the owner
+        isBoardMember(userToken,boardName);
 
         //check if the list is valid
         List myList=listService.isListValid(listId,"you try to add a card to a nonexistent List");
@@ -128,8 +126,8 @@ public class BoardService {
             String boardName,
             String userToken )
     {
-        //check if the user is valid
-        userService.isUserValid(userToken,"You are not allowed to update a card.Please register and try again");
+        //to do this operation the user must be a board member or the owner
+        isBoardMember(userToken,boardName);
 
         //check if the card is valid also
         Card ourCard=cardService.isCardValid(cardId,"No Card was found with that Id");
@@ -167,11 +165,11 @@ public class BoardService {
 
         //i should check if the user is valid and if he is a owner of the board otherwise he can't make this operation
 
-        //check the validity of the user
-        User user=userService.isUserValid(userToken,"You are not allowed to delete a List.Please register and try again");
+        //to do this operation the user must be a board member or the owner
+        isBoardMember(userToken,boardName);
         //check if the board exists and if he is the owner of that board
         Board board= boardExists(boardName,"No board has been found");
-        if(! board.getOwner().getEmail().equals(user.getEmail())) throw  new InvalidCredentialsException("AuthorizationException","you are not allowed to modify this board");
+     //   if(! board.getOwner().getEmail().equals(user.getEmail())) throw  new InvalidCredentialsException("AuthorizationException","you are not allowed to modify this board");
 
         //retrieve list data
         List myList= listService.findListById(listId);
@@ -187,11 +185,11 @@ public class BoardService {
 
         //i should check if the user is valid and if he is a owner of the board otherwise he can't make this operation
 
-        //check the validity of the user
-        User user=userService.isUserValid(userToken,"You are not allowed to delete a Card.Please register and try again");
-        //check if the board exists and if he is the owner of that board
-        Board board= boardExists(boardName,"No board has been found");
-        if(! board.getOwner().getEmail().equals(user.getEmail())) throw  new InvalidCredentialsException("AuthorizationException","you are not allowed to modify this board");
+        //to do this operation the user must be a board member or the owner
+          isBoardMember(userToken,boardName);
+        //check if the board exists and if he is the owner of that board ( nooop he should simple be a boardMember and for me a admin is in membersList)
+     //   Board board= boardExists(boardName,"No board has been found");
+     //   if(! board.getOwner().getEmail().equals(user.getEmail())) throw  new InvalidCredentialsException("AuthorizationException","you are not allowed to modify this board");
 
         //retrieve card data
         Card myCard= cardService.findCardById(cardId);
@@ -199,7 +197,7 @@ public class BoardService {
         cardService.deleteCardById(cardId);
 
         //retrieve board data
-         board= boardExists(boardName,"No board has been found");
+         Board board= boardExists(boardName,"No board has been found");
          //i don't need the listId so i can get the list object and then remove the card from it .
         // but i iterate over the list of list and i remove the card from all of them
          board.getLists().forEach( list ->  list.removeCard(myCard));
@@ -210,15 +208,66 @@ public class BoardService {
 
     public BoardOutputDto changeBoardVisibility(boolean isVisible, String boardName, String userToken) {
 
-        //check the validity of the user
-        userService.isUserValid(userToken,"You are not allowed to delete a Card.Please register and try again");
+        //check the validity of the user and if he is the owner of the board
+       User user= userService.isUserValid(userToken,"You are not allowed to delete a Card.Please register and try again");
 
         //retrieve board data
         Board board= boardExists(boardName,"No board has been found");
+        if(! board.getOwner().getEmail().equals(user.getEmail())) throw  new InvalidCredentialsException("AuthorizationException","you are not allowed to modify this board");
         board.setVisible(isVisible);
         boardRepository.save(board);
 
         return  ModelToDtoMapper.mapToBoard(board);
 
     }
+
+    public BoardOutputDto moveCard(int cardId, int newListId, String boardName, String userToken) {
+
+
+
+        //to do this operation the user must be a board member or the owner
+        isBoardMember(userToken,boardName);
+
+        //get the card and the list objects
+        Card myCard =cardService.findCardById(cardId);
+        List myList=listService.findListById(newListId);
+
+
+
+        //update the list-field in card Object
+        myCard.setList(myList);
+        cardService.save(myCard);
+
+        //i add the card to List object for display purpose
+        myList.addCard(myCard);
+
+
+        //retrieve board data
+        Board board= boardExists(boardName,"No board has been found");
+        return  ModelToDtoMapper.mapToBoard(board);
+
+    }
+
+
+
+    private User isBoardMember(String userToken,String boardName) {
+
+        //retrieve board data
+        Board board= boardExists(boardName,"No board has been found");
+
+        //check the validity of the user
+        User user= userService.isUserValid(userToken,"You are not allowed to delete a Card.Please register and try again");
+
+        java.util.List<String> emails= board.
+                getMembers().
+                stream().
+                filter(s -> s.equals(user.getEmail()))
+                .toList();
+
+        if(emails.isEmpty()) throw  new InvalidCredentialsException("AuthorizationException","you are not a board Member so u aren't allowed to modify this board");
+
+        return  userService.findUserByEmail(emails.get(0)).get();
+
+    }
+
 }

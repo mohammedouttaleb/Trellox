@@ -71,6 +71,14 @@ public class Card extends BaseEntity {
         this.dueDate = dueDate;
     }
 
+    public void setList(com.xenophobe.trellox.model.List list) {
+        this.list = list;
+    }
+
+    public com.xenophobe.trellox.model.List getList() {
+        return list;
+    }
+
     public List<String> getComments() {
         return comments;
     }

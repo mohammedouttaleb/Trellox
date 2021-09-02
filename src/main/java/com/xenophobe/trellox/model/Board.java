@@ -95,7 +95,7 @@ public class Board {
 
     public void addMember(String userEmail){
         if(membersEmail==null) membersEmail=new ArrayList<>();
-        membersEmail.add(userEmail);
+        if(!membersEmail.contains(userEmail))  membersEmail.add(userEmail);
     }
     public void removeMember(String userEmail){
         if(membersEmail==null) membersEmail=new ArrayList<>();

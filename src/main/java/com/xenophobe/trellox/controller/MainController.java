@@ -7,6 +7,7 @@ import com.xenophobe.trellox.router.Router;
 import com.xenophobe.trellox.utils.ListWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
+
 
 @RestController
 @Validated
@@ -28,15 +29,13 @@ public class MainController {
 
     private final Router router;
 
+
     public MainController(Router router){
         this.router=router;
     }
 
 
     @PostMapping(value = "/createUser")
-    /*I should add an email verification only user with  attribute(i should add it to the model) active=true  can
-    * work with trellox using that process i will not need to send invitation links
-    * to people**/
     public ResponseEntity<UserOutputDto> createUser(@Valid @RequestBody User user){
         //call the router
         LOG.debug("CreateUser request {}",user);
@@ -47,11 +46,36 @@ public class MainController {
         return bodyBuilder.body(userOutputDto);
     }
 
+//    @PostMapping(path = "/sendEmailVerification")
+//    public ResponseEntity<UserOutputDto> sendEmailVerification(
+//            @NotEmpty   @Email  String email )
+//    {
+//        LOG.debug("emailVerification request {}",email);
+//        UserOutputDto userOutputDto= router.sendEmailVerification(email);
+//        LOG.debug("emailVerification response {}",userOutputDto);
+//
+//        ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
+//        return bodyBuilder.body(userOutputDto);
+//    }
+    @PostMapping(path = "/verifyEmail")
+    public ResponseEntity<UserOutputDto> verifyEmail(
+            @NotEmpty   @Email String email,
+            @NotEmpty String providedToken)
+    {
+        LOG.debug("verifyEmail request {} {}   ", email,providedToken);
+        UserOutputDto userOutputDto= router.verifyEmail(email,providedToken);
+        LOG.debug("verifyEmail response {}",userOutputDto);
+
+        ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
+        return bodyBuilder.body(userOutputDto);
+
+    }
+
 
     @PostMapping(value = "/login")
     public ResponseEntity<UserOutputDto> loginUser(
-            @NotEmpty @Email @RequestBody String email,
-            @NotEmpty @RequestBody String password)
+            @NotEmpty @Email  String email,
+            @NotEmpty  String password)
     {
 
         LOG.debug("loginUser request {} {}",email,password);
@@ -80,7 +104,7 @@ public class MainController {
     @PostMapping(path = "/addMember/{boardName}")
     public ResponseEntity<BoardOutputDto> addBoardMember(
             @NotEmpty @Email String potentialMemberEmail,
-            @PathVariable(required = true,name = "boardName") String boardName,
+            @PathVariable(name = "boardName") String boardName,
             @NotEmpty String userToken)
     {
         LOG.debug("addMember request {} {} {}", boardName,potentialMemberEmail,userToken);
@@ -188,6 +212,27 @@ public class MainController {
         return bodyBuilder.body(boardOutputDto);
 
     }
+
+    @PostMapping(path = "/moveCard/{boardName}")
+    public ResponseEntity<BoardOutputDto> moveCard(
+            int cardId,
+            int newListId,
+            @PathVariable(name = "boardName") String boardName,
+            @NotEmpty String userToken )
+
+    {
+        LOG.debug("moveCard request {} {} {}  ", cardId,newListId,boardName);
+        BoardOutputDto boardOutputDto= router.moveCard(cardId,newListId,boardName,userToken);
+        LOG.debug("moveCard response {}",boardOutputDto);
+
+        ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
+        return bodyBuilder.body(boardOutputDto);
+
+    }
+
+
+
+
 
 
 

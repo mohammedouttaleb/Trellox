@@ -13,6 +13,12 @@ public class UserOutputDto {
         this.token=token;
         this.email=email;
     }
+
+    public UserOutputDto(String message, String email) {
+        this.message = message;
+        this.email = email;
+    }
+
     public UserOutputDto(){ }
 
     public UserOutputDto(String email) {
