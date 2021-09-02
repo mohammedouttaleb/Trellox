@@ -8,11 +8,9 @@ import com.xenophobe.trellox.model.Card;
 import com.xenophobe.trellox.model.List;
 import com.xenophobe.trellox.model.User;
 import com.xenophobe.trellox.repository.BoardRepository;
-import com.xenophobe.trellox.utils.ListWrapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -121,8 +119,8 @@ public class BoardService {
             int cardId,
             String cardDescription,
             Instant dueDate,
-            ListWrapper<String> comments,
-            java.util.List<String> membersEmails,
+            String comment,
+            String memberEmail,
             String boardName,
             String userToken )
     {
@@ -136,21 +134,18 @@ public class BoardService {
         //if it's good we will check which params are not null and we will update our card
         if(cardDescription!=null) ourCard.setCardDescription( cardDescription);
         if(dueDate!=null) ourCard.setDueDate(dueDate);
-        if(comments!=null && comments.getListOfTType()!=null && !comments.getListOfTType().isEmpty()) ourCard.setComments(comments.getListOfTType());
+        if(comment!=null) ourCard.addComment(comment);
 
         //members logic
-        java.util.List<User> userList=new ArrayList<>();
-        if(membersEmails!=null && !membersEmails.isEmpty()){
+          if(memberEmail!=null){
+              Optional<User> optionalUser=userService.findUserByEmail(memberEmail);
+              //optionalUser.ifPresent(ourCard::addMember);
+              if(optionalUser.isPresent()){
+                  User user= optionalUser.get();
+                  if( isBoardMemberV2(user,boardName)) ourCard.addMember(user);
 
-           membersEmails.forEach(
-                   email -> {
-                       Optional<User> optionalUser=userService.findUserByEmail(email);
-                       optionalUser.ifPresent(userList::add);
-                   }
-           );
-            ourCard.setMembers(userList);
-        }
-
+              }
+          }
         cardService.save(ourCard);
 
         //retrieve board data
@@ -169,7 +164,7 @@ public class BoardService {
         isBoardMember(userToken,boardName);
         //check if the board exists and if he is the owner of that board
         Board board= boardExists(boardName,"No board has been found");
-     //   if(! board.getOwner().getEmail().equals(user.getEmail())) throw  new InvalidCredentialsException("AuthorizationException","you are not allowed to modify this board");
+
 
         //retrieve list data
         List myList= listService.findListById(listId);
@@ -188,8 +183,7 @@ public class BoardService {
         //to do this operation the user must be a board member or the owner
           isBoardMember(userToken,boardName);
         //check if the board exists and if he is the owner of that board ( nooop he should simple be a boardMember and for me a admin is in membersList)
-     //   Board board= boardExists(boardName,"No board has been found");
-     //   if(! board.getOwner().getEmail().equals(user.getEmail())) throw  new InvalidCredentialsException("AuthorizationException","you are not allowed to modify this board");
+
 
         //retrieve card data
         Card myCard= cardService.findCardById(cardId);
@@ -267,6 +261,22 @@ public class BoardService {
         if(emails.isEmpty()) throw  new InvalidCredentialsException("AuthorizationException","you are not a board Member so u aren't allowed to modify this board");
 
         return  userService.findUserByEmail(emails.get(0)).get();
+
+    }
+    private  boolean isBoardMemberV2(User user,String boardName){
+
+        //retrieve board data
+        Board board= boardExists(boardName,"No board has been found");
+
+        java.util.List<String> emails= board.
+                getMembers().
+                stream().
+                filter(s -> s.equals(user.getEmail()))
+                .toList();
+
+        if(emails.isEmpty()) throw  new InvalidCredentialsException("AuthorizationException","you are not a board Member so u aren't allowed to be added to this card");
+
+        else  return  true;
 
     }
 

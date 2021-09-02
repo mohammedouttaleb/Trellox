@@ -94,6 +94,8 @@ public class UserService {
          mail.setTo(email);
          mail.setFrom("oninebankensias@gmail.com");
         mail.setSubject("Trellox Email Verification");
+        //i do these cause the existence of @ cause a problem is the decryption so
+        //i replace it with + randomly to avoid the problem
         email= email.replace('@','+');
         String token= encryptionObject.encrypt(email);
         mail.setText("Welcome Trellox Family ;).\n\n\nTo verify your email and become a valid Trellox User, Please use this token : \n\n"+token+" .\n\n\nCordially.\n\n\n\nTrellox Team");
@@ -105,6 +107,8 @@ public class UserService {
 
     public UserOutputDto verifyEmail(String providedToken,String email){
 
+        //i do these so that the decrypted mail will match with the current
+        // cause we already replace @ with + in the encryption process
         email=email.replace('@','+');
         String tokenDecrypted=encryptionObject.decrypt(providedToken);
         if(tokenDecrypted==null || !tokenDecrypted.equals(email))

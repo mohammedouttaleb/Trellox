@@ -2,18 +2,15 @@ package com.xenophobe.trellox.router;
 
 import com.xenophobe.trellox.dto.BoardOutputDto;
 import com.xenophobe.trellox.dto.UserOutputDto;
-import com.xenophobe.trellox.model.Board;
 import com.xenophobe.trellox.model.User;
 import com.xenophobe.trellox.service.BoardService;
-import com.xenophobe.trellox.service.CardService;
+
 import com.xenophobe.trellox.service.UserService;
-import com.xenophobe.trellox.utils.ListWrapper;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 import java.time.Instant;
-import java.util.List;
 
 @Component
 public class Router {
@@ -62,9 +59,9 @@ public class Router {
 
     }
 
-    public BoardOutputDto updateCard(int cardId, String cardDescription, Instant dueDate, ListWrapper<String> comments, List<String> membersEmails, String boardName, String userToken)
+    public BoardOutputDto updateCard(int cardId, String cardDescription, Instant dueDate, String comment, String memberEmail, String boardName, String userToken)
     {
-        return  boardService.updateCard(cardId,cardDescription,dueDate,comments,membersEmails,boardName,userToken);
+        return  boardService.updateCard(cardId,cardDescription,dueDate,comment,memberEmail,boardName,userToken);
     }
 
     public BoardOutputDto deleteList(Integer listId, String boardName, String userToken) {
@@ -87,10 +84,7 @@ public class Router {
         return boardService.moveCard(cardId,newListId,boardName,userToken);
     }
 
-//    public UserOutputDto sendEmailVerification(String email) {
-//
-//        return  userService.sendEmailVerification(email);
-//    }
+
 
     public UserOutputDto verifyEmail(String email, String providedToken) {
 

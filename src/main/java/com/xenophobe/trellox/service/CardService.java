@@ -1,13 +1,12 @@
 package com.xenophobe.trellox.service;
 
-import com.xenophobe.trellox.dto.BoardOutputDto;
+
 import com.xenophobe.trellox.exception.CardNotFoundException;
 import com.xenophobe.trellox.model.Card;
-import com.xenophobe.trellox.model.List;
 import com.xenophobe.trellox.repository.CardRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+
 import java.util.Optional;
 
 @Service

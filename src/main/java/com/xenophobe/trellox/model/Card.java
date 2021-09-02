@@ -4,6 +4,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -83,12 +84,30 @@ public class Card extends BaseEntity {
         return comments;
     }
 
+    public  void addComment(String comment){
+        if(this.comments==null) comments=new ArrayList<>();
+        this.comments.add(comment);
+    }
+    public  void removeComment(String comment){
+        if(this.comments==null) comments=new ArrayList<>();
+        this.comments.remove(comment);
+    }
+
     public void setComments(List<String> comments) {
         this.comments = comments;
     }
 
     public List<User> getMembers() {
         return members;
+    }
+
+    public  void addMember(User newMember){
+        if(this.members==null) members=new ArrayList<>();
+        this.members.add(newMember);
+    }
+    public  void removeComment(User oldMember){
+        if(this.members==null) members=new ArrayList<>();
+        this.members.remove(oldMember);
     }
 
     public void setMembers(List<User> members) {

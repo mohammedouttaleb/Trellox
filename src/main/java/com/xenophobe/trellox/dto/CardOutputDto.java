@@ -12,7 +12,7 @@ public record CardOutputDto(
         String cardDescription,
         Instant dueDate,
         List<String> comments,
-        List<UserOutputDto> members
+        List<String> membersEmails
 
 ) {
 }

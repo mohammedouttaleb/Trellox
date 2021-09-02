@@ -4,7 +4,6 @@ import com.xenophobe.trellox.dto.BoardOutputDto;
 import com.xenophobe.trellox.dto.UserOutputDto;
 import com.xenophobe.trellox.model.User;
 import com.xenophobe.trellox.router.Router;
-import com.xenophobe.trellox.utils.ListWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +17,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
-import java.util.ArrayList;
 
 
 @RestController
@@ -152,14 +150,14 @@ public class MainController {
               @NotNull Integer cardId,
             String cardDescription,
              Instant dueDate,
-             ListWrapper<String> comments,
-             ArrayList<String> membersEmails,
+             String newComment,
+           @Email  String newMemberEmail,
             @PathVariable(name = "boardName") String boardName,
              @NotEmpty String userToken
 
     ){
-        LOG.debug("UpdateCard request {} {} {} {} {} {} ", cardId,cardDescription,dueDate,comments,membersEmails,boardName);
-        BoardOutputDto boardOutputDto= router.updateCard(cardId,cardDescription,dueDate,comments,membersEmails,boardName,userToken);
+        LOG.debug("UpdateCard request {} {} {} {} {} {} ", cardId,cardDescription,dueDate,newComment,newMemberEmail,boardName);
+        BoardOutputDto boardOutputDto= router.updateCard(cardId,cardDescription,dueDate,newComment,newMemberEmail,boardName,userToken);
         LOG.debug("UpdateCard response {}",boardOutputDto);
 
         ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);

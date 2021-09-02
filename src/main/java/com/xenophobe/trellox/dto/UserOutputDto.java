@@ -38,6 +38,7 @@ public class UserOutputDto {
         return "UserOutputDto{" +
                 "message='" + message + '\'' +
                 ", token='" + token + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
 }
