@@ -39,7 +39,7 @@ public class ModelToDtoMapper {
         for (Card card: cardList) {
 
             List<String> membersEmails=new ArrayList<>();
-            card.getMembers().forEach( user -> membersEmails.add(user.getEmail()));
+           if(card.getMembers()!=null) card.getMembers().forEach( user -> membersEmails.add(user.getEmail()));
             cardOutputDtos.add( new CardOutputDto(card.getCardId(),card.getCardName(), card.getCardDescription(),card.getDueDate(),card.getComments(),membersEmails) );
         }
         return  cardOutputDtos;

@@ -280,4 +280,11 @@ public class BoardService {
 
     }
 
+    public BoardOutputDto getBoard(String boardName, String userToken) {
+
+        Board board=  boardExists(boardName,"No board has been found");
+
+        isBoardMember(userToken, boardName);
+        return  ModelToDtoMapper.mapToBoard(board);
+    }
 }

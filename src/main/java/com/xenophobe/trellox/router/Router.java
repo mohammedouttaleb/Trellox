@@ -90,4 +90,9 @@ public class Router {
 
         return  userService.verifyEmail(providedToken,email);
     }
+
+    public BoardOutputDto getBoard(String boardName, String userToken) {
+
+        return boardService.getBoard(boardName,userToken);
+    }
 }

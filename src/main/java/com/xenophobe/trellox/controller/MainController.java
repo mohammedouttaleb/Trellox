@@ -2,6 +2,7 @@ package com.xenophobe.trellox.controller;
 
 import com.xenophobe.trellox.dto.BoardOutputDto;
 import com.xenophobe.trellox.dto.UserOutputDto;
+import com.xenophobe.trellox.model.Board;
 import com.xenophobe.trellox.model.User;
 import com.xenophobe.trellox.router.Router;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import java.time.Instant;
 
 
 @RestController
+@CrossOrigin
 @Validated
 public class MainController {
 
@@ -57,8 +59,8 @@ public class MainController {
 //    }
     @PostMapping(path = "/verifyEmail")
     public ResponseEntity<UserOutputDto> verifyEmail(
-            @NotEmpty   @Email String email,
-            @NotEmpty String providedToken)
+          @RequestParam @NotEmpty   @Email String email,
+          @RequestParam  @NotEmpty String providedToken)
     {
         LOG.debug("verifyEmail request {} {}   ", email,providedToken);
         UserOutputDto userOutputDto= router.verifyEmail(email,providedToken);
@@ -72,8 +74,8 @@ public class MainController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<UserOutputDto> loginUser(
-            @NotEmpty @Email  String email,
-            @NotEmpty  String password)
+            @RequestParam @NotEmpty @Email  String email,
+            @RequestParam @NotEmpty  String password)
     {
 
         LOG.debug("loginUser request {} {}",email,password);
@@ -87,9 +89,9 @@ public class MainController {
 
     @PostMapping("/createBoard")
     public ResponseEntity<BoardOutputDto> createBoard(
-             @NotEmpty @Size(min = 5) String boardName,
-             @NotNull boolean isVisible,
-             @NotEmpty  String userToken){
+            @RequestParam @NotEmpty @Size(min = 5) String boardName,
+            @RequestParam @NotNull boolean isVisible,
+            @RequestParam @NotEmpty  String userToken){
 
         LOG.debug("CreateBoard request {} {} {}", boardName,isVisible,userToken);
         BoardOutputDto boardOutputDto= router.createBoard( boardName, isVisible,userToken);
@@ -97,6 +99,22 @@ public class MainController {
 
         ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
         return bodyBuilder.body(boardOutputDto);
+    }
+
+
+    @GetMapping("/getBoard")
+    public ResponseEntity<BoardOutputDto> getBoard(
+            @RequestParam @NotEmpty  String boardName,
+            @RequestParam @NotEmpty  String userToken
+    ){
+
+        LOG.debug("CreateBoard request {}  {}", boardName,userToken);
+        BoardOutputDto boardOutputDto= router.getBoard( boardName,userToken);
+        LOG.debug("CreateBoard response {}",boardOutputDto);
+
+        ResponseEntity.BodyBuilder bodyBuilder=ResponseEntity.status(200);
+        return bodyBuilder.body(boardOutputDto);
+
     }
 
     @PostMapping(path = "/addMember/{boardName}")
@@ -116,9 +134,9 @@ public class MainController {
 
     @PutMapping(path = "/addList/{boardName}")
     public ResponseEntity<BoardOutputDto> addList(
-          @NotEmpty String listName,
+         @RequestParam @NotEmpty String listName,
           @PathVariable(required = true,name = "boardName") String boardName,
-          @NotEmpty String userToken)
+         @RequestParam @NotEmpty String userToken)
     {
         LOG.debug("addList request {} {} {}", boardName,listName,userToken);
         BoardOutputDto boardOutputDto= router.addList(listName,boardName,userToken);
